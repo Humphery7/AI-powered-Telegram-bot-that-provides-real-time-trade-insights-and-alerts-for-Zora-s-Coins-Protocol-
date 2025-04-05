@@ -1,138 +1,96 @@
-# AI-Powered Telegram Bot for Zora Trading Insights
+# 🤖 Zora Trading Insights Bot
 
-## Project Overview
+A Telegram bot that delivers real-time insights into activity on the **Zora protocol**, helping crypto users stay informed, make smarter decisions, and receive alerts on key on-chain movements — all within Telegram.
 
-The Zora Trading Insights bot is an AI-powered Telegram bot designed to provide real-time trade insights and alerts for users of Zora's Coins Protocol. By integrating data from Zora transactions, Base blockchain, CoinGecko, Uniswap, and using AI-powered trade insights, the bot helps users monitor cryptocurrency trends, track transaction activity, and receive intelligent trade suggestions based on market conditions.
-
-## Core Features
-
-### 1. **Real-Time Alerts**
-- Monitor transactions on Zora's Coins Protocol (Base blockchain).
-- Detect coins with significant surges or price changes.
-- Notify users with real-time alerts when a coin gains momentum.
-
-### 2. **AI-Powered Trade Insights**
-- Use Natural Language Processing (NLP) to analyze comments and captions for sentiment analysis.
-- Provide trade suggestions based on historical market data.
-- Offer personalized recommendations for users to enhance trading decisions.
-
-### 3. **Command-Based Interactions**
-- `/trending` – Returns the top 5 trending coins by market cap and volume.
-- `/recommend` – The AI provides a suggested coin to trade based on historical analysis.
-- `/alerts ON/OFF` – Enables or disables real-time notifications.
-
-### 4. **Integration with Zora’s Coins Protocol**
-- Fetch transaction data from Zora’s API and Base blockchain logs.
-- Display real-time trade volume, price changes, and other key metrics.
-- Integration with Uniswap for direct trading links.
-
-### 5. **Scalability & Optimization**
-- Designed with lightweight architecture to ensure fast responses.
-- Optimized for handling multiple transactions and real-time data processing.
-
-## Tech Stack
-
-- **Backend:** Python (Flask/FastAPI), Node.js (Express.js)
-- **AI/NLP:** OpenAI API, TextBlob for sentiment analysis, TensorFlow (for LSTM model)
-- **Data Sources:** Zora API, CoinGecko API, Uniswap API
-- **Bot Frameworks:**
-  - Telegram: python-telegram-bot library
-  - Discord: discord.py (optional)
-- **Hosting:** AWS Lambda, Heroku, or Vercel
-
-## Installation
-
-### Prerequisites
-- Python 3.8+
-- pip
-- An active Telegram bot token (via BotFather)
-- Environment variables stored in a `.env` file
-
-### Steps to Setup
-
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/yourusername/zora-trading-bot.git
-   cd zora-trading-bot
-   ```
-
-2. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set Up Environment Variables:**
-   Create a `.env` file and add the following:
-   ```env
-   TOKEN=your_telegram_bot_token
-   ```
-
-4. **Run the Bot:**
-   ```bash
-   python bot.py
-   ```
-
-## How It Works
-
-### **1. Real-Time Alerts**
-
-The bot continuously monitors transactions from Zora’s Coins Protocol and the Base blockchain. When a new significant transaction (e.g., a large transfer) is detected, it sends an alert to users with active notifications.
-
-### **2. AI-Powered Trade Recommendations**
-
-The bot fetches historical price data for cryptocurrencies and processes it through an LSTM (Long Short-Term Memory) model for prediction. The model predicts the next price for the coins based on the last 30 days' data. When a coin shows potential for growth (based on prediction and current market behavior), the bot recommends it.
-
-### **3. Trend Analysis & Sentiment Insights**
-
-The bot uses TextBlob for sentiment analysis on comments and captions related to specific cryptocurrencies. This helps in analyzing the market mood, and the bot can provide insights on whether the sentiment around a coin is bullish or bearish.
-
-### **4. Command Interaction**
-
-- `/trending`: Fetches the top 5 trending cryptocurrencies by market cap, volume, and 24h price change.
-- `/recommend`: Uses AI to suggest a cryptocurrency to trade based on predictive analytics.
-- `/alerts ON/OFF`: Toggles real-time transaction alerts.
-
-## Key Functions
-
-### `get_trending_coins()`
-Fetches the top 5 trending cryptocurrencies based on market capitalization and price change percentage from CoinGecko.
-
-### `get_liquidity(token_address)`
-Checks the liquidity of a specific token on Uniswap by querying the Uniswap API.
-
-### `get_zora_transactions()`
-Retrieves transaction data from Zora’s Coins Protocol to monitor activity.
-
-### `analyze_sentiment(text)`
-Analyzes text sentiment using TextBlob. Positive polarity indicates bullish sentiment, while negative polarity suggests bearish sentiment.
-
-### `preprocess_data(historical_prices)`
-Prepares historical price data for input to the LSTM model, using normalization and sequence formatting.
-
-### `recommend(update, context)`
-Provides an AI-powered recommendation based on LSTM predictions for the top coins.
-
-### `send_alert(context)`
-Sends alerts about significant transactions from the blockchain or price movements to users who have enabled notifications.
-
-## Example Usage
-
-- **/trending**: Get the list of the top 5 trending cryptocurrencies.
-- **/recommend**: Receive a suggested coin to trade based on AI analysis.
-- **/alerts ON**: Enable real-time alerts.
-- **/alerts OFF**: Disable real-time alerts.
-
-## Conclusion
-
-The Zora Trading Insights bot is a powerful tool for cryptocurrency traders, providing real-time alerts, personalized trade recommendations, and market sentiment insights powered by AI. It is designed to be scalable and efficient, offering traders valuable information that helps them make data-driven decisions in real-time.
-
-## Future Improvements
-
-- **Expanded Coin Monitoring:** Add more coins to the monitoring list for broader recommendations.
-- **Deep Learning Optimization:** Implement more advanced models like Transformers for improved price prediction accuracy.
-- **User Personalization:** Allow users to customize their alerts and recommendations based on personal preferences.
+![Bot Preview](bot-video.gif)
 
 ---
 
-For any questions or contributions, feel free to open an issue or pull request on the GitHub repository.
+## 🔧 Features
+
+- **🧠 AI-Powered Recommendation (/recommend)**  
+  An experimental feature that leverages machine learning to suggest a potentially interesting coin to trade. It considers historical transaction patterns, basic market trends, and other heuristics to make a smart guess.
+
+- **📈 Trending Activity (/trending)**  
+  Retrieves and summarizes trending tokens based on Zora-related metrics such as transaction frequency, volume, or user interactions. Ideal for spotting what's gaining traction on Zora.
+
+- **🔔 Custom Alerts (/alerts ON | OFF)**  
+  - `/alerts ON` enables background monitoring and sends you alerts when new transactions or notable activities occur on Zora.
+  - `/alerts OFF` disables notifications so the bot will stay quiet unless directly interacted with.
+
+- **💬 Sentiment Checker**  
+  The bot can analyze any text message you input using basic NLP sentiment analysis. This helps gauge emotional tone, especially useful when you're reading tweets or messages about a token or project.
+
+- **📚 Help Command (/help)**  
+  Lists all the available commands and what they do, making it easy to get started.
+
+---
+
+## 🚀 Deployment
+
+The bot is **live and continuously running on [PythonAnywhere](https://www.pythonanywhere.com/)** — no downtime, no stress. Just start chatting with it on Telegram.
+
+---
+
+## 💡 Available Commands
+
+| Command        | Description                                                                 |
+|----------------|-----------------------------------------------------------------------------|
+| `/start`       | Initializes the bot and registers you for personalized alerts.              |
+| `/help`        | Displays a list of all commands and how to use them.                        |
+| `/trending`    | Shows currently active or popular Zora-related tokens based on on-chain activity. |
+| `/recommend`   | Provides a coin recommendation using an AI model (in progress) and other metrics such as of coin.             |
+| `/alerts ON`   | Turns on automatic alerts for Zora transaction activity.                    |
+| `/alerts OFF`  | Turns off alerts so you stop receiving notifications.                       |
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/yourusername/zora-trading-insights-bot.git
+cd zora-trading-insights-bot
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Set environment variables
+
+Create a `.env` file in the root folder and add your Telegram bot token:
+
+```env
+TOKEN=your_telegram_bot_token
+```
+
+### 4. Run the bot
+
+```bash
+python bot.py
+```
+
+---
+
+## 🧠 Tech Stack
+
+- **Python** (Asyncio)
+- **python-telegram-bot**
+- **TextBlob** (sentiment analysis)
+- **TensorFlow** (for AI recommendations — work in progress)
+- **Zora API** (core transaction data)
+
+---
+
+## deployment 
+
+- **pythonAnywhere** 
+
+## 📃 License
+
+MIT License — free to use, modify, and contribute.
 
