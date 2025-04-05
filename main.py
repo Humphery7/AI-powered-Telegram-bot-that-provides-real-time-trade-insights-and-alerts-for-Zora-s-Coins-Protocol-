@@ -15,7 +15,7 @@ import asyncio
 load_dotenv()
 
 # Load your trained LSTM model
-model = tf.keras.models.load_model('my_model.keras')
+# model = tf.keras.models.load_model('my_model.keras')
 
 TOKEN = os.getenv('TOKEN')
 COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins/markets'
@@ -140,86 +140,42 @@ def get_historical_data(token_id, vs_currency='usd', days=5):
 
 
 # Prepare the input data for the LSTM model (the same preprocessing you used during training)
-def preprocess_data(historical_prices):
-    scaler = MinMaxScaler()
-    df = pd.DataFrame(historical_prices)
-    df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
-
-    sequence_length = 30  # Use the last 30 days for prediction
-    X = []
-    for i in range(len(df_scaled) - sequence_length):
-        X.append(df_scaled.iloc[i:i + sequence_length].values)
-    X = np.array(X)
-    return X, scaler
+# def preprocess_data(historical_prices):
+#     scaler = MinMaxScaler()
+#     df = pd.DataFrame(historical_prices)
+#     df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+#
+#     sequence_length = 30  # Use the last 30 days for prediction
+#     X = []
+#     for i in range(len(df_scaled) - sequence_length):
+#         X.append(df_scaled.iloc[i:i + sequence_length].values)
+#     X = np.array(X)
+#     return X, scaler
 
 
 # Get real-time transaction volume for the coin (using BlockScout API)
-def get_transaction_volume(coin):
-    transactions = get_transaction_data()
-    if transactions:
-        # Filter transactions involving the coin and calculate the total transaction volume
-        volume = 0
-        for tx in transactions:
-            if tx['token_name'] == coin:  # Check if the coin is involved in the transaction
-                volume += float(tx['value'])
-        return volume
-    return 0
+# def get_transaction_volume(coin):
+#     transactions = get_transaction_data()
+#     if transactions:
+#         # Filter transactions involving the coin and calculate the total transaction volume
+#         volume = 0
+#         for tx in transactions:
+#             if tx['token_name'] == coin:  # Check if the coin is involved in the transaction
+#                 volume += float(tx['value'])
+#         return volume
+#     return 0
 
 
 # Get market data for recommendation
 async def recommend(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # List of coins to monitor
-    coins_to_monitor = ['bitcoin', 'ethereum', 'binancecoin', 'cardano', 'ripple']
+    coins_to_monitor = ['bitcoin', 'ethereum', 'litecoin', 'dogecoin']  # Add more coins if needed
 
-    # Get historical price data for all coins at once
-    historical_data = {}
-    for coin in coins_to_monitor:
-        # Get historical price data for the last 30 days
-        prices = get_historical_data(coin, days=30)
-        if prices:
-            historical_data[coin] = prices
-
-    # Check if we have data for all coins
-    if len(historical_data) != len(coins_to_monitor):
-        await update.message.reply_text("Unable to get data for all coins. Try again later.")
-        return
-
-    # Create a DataFrame with historical prices for all coins
-    df = pd.DataFrame(historical_data)
-
-    # Make sure all coins have the same number of data points
-    min_length = min(len(prices) for prices in historical_data.values())
-    for coin in coins_to_monitor:
-        historical_data[coin] = historical_data[coin][-min_length:]
-
-    # Recreate DataFrame with aligned data
-    df = pd.DataFrame(historical_data)
-
-    # Scale the data
-    scaler = MinMaxScaler()
-    df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
-
-    # Prepare the sequences for prediction
-    sequence_length = 5
-    X = []
-    if len(df_scaled) >= sequence_length:
-        # Take the last 30 days of data for prediction
-        X = df_scaled.iloc[-sequence_length:].values.reshape(1, sequence_length, len(coins_to_monitor))
-    else:
-        await update.message.reply_text("Not enough historical data available.")
-        return
-
-    # Make prediction for all coins at once
-    predicted_prices = model.predict(X)
-
-    # Inverse transform to get actual prices
-    predicted_prices = scaler.inverse_transform(predicted_prices.reshape(1, -1)).reshape(-1)
-
-    # Store recommendations
+    # Store recommendations based on current market price
     recommendations = []
 
-    # Process each coin's prediction
-    for i, coin in enumerate(coins_to_monitor):
+    # Process each coin
+    for coin in coins_to_monitor:
         # Get real-time market data for the coin
         market_data = get_market_data(coin)
         if not market_data:
@@ -229,29 +185,29 @@ async def recommend(update: Update, context: ContextTypes.DEFAULT_TYPE):
         price_change_24h = market_data['market_data']['price_change_percentage_24h']
         market_cap = market_data['market_data']['market_cap']['usd']
 
-        # Check if the coin is trending based on 24h price change, prediction
+        # Recommendation is based solely on the current price (sorted)
         recommendation = {
             'coin': coin,
             'current_price': current_price,
-            'predicted_next_price': predicted_prices[i],
             'price_change_24h': price_change_24h,
-            'market_cap': market_cap,
-            'is_trending': price_change_24h > 5
+            'market_cap': market_cap
         }
 
-        # If the coin is trending or the predicted price is higher, recommend it
-        if recommendation['is_trending'] or recommendation['predicted_next_price'] > current_price:
-            recommendations.append(recommendation)
+        # Append recommendation for each coin
+        recommendations.append(recommendation)
+
+    # Sort recommendations by current price in descending order
+    recommendations.sort(key=lambda x: x['current_price'], reverse=True)
 
     # Prepare message to send back to user
-    message = "Recommendations\n"
-    for rec in recommendations:
-        message += f"Coin: {rec['coin']}, Predicted Next Price: ${rec['predicted_next_price']:.2f}, Current Price: ${rec['current_price']:.2f}\n"
-
+    message = "Recommended Coins Sorted by Current Price:\n"
     if recommendations:
+        for rec in recommendations:
+            message += f"Coin: {rec['coin']}, Price: ${rec['current_price']:.2f}, 24h Change: {rec['price_change_24h']:.2f}%\n"
         await update.message.reply_text(message)
     else:
         await update.message.reply_text("No recommendations at this time")
+
 
 
 def fetch_transaction_data():
@@ -391,3 +347,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
