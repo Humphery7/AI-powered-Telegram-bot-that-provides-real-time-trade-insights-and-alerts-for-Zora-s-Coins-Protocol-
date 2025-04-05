@@ -5,7 +5,7 @@ A Telegram bot that delivers real-time insights into activity on the **Zora prot
 ![Bot Preview](bot-video.gif)
 
 ## interact with bot at
-[bot on telegram](t.me/zora_cryptobot)
+[ZoraBot on Telegram](https://t.me/zora_cryptobot)
 
 ---
 
